@@ -68,9 +68,35 @@ namespace FlottaApi.Controllers
                 _context.Sofors.Update(so);
                 _context.SaveChanges();
                 return Ok("The driverdata modified");
-
-
             }
+            catch (Exception ex)
+            {
+                return BadRequest("Something went wrong. " + ex.Message);
+            }
+
+
+
+
         }
+        [HttpGet("SoforJarmu/{id}")]
+        public IActionResult GetSoforJarmu(int id)
+        {
+            try
+            {
+                Sofor vane = _context.Sofors.FirstOrDefault(s => s.Id == id);
+                if (vane == null)
+                    return NotFound("Hiányzik a sofőr");
+                var result = _context.Kikuldottjarmus.Where(j => j.SoforNavigation.Id == id)
+                .Select(j => j.Gepjarmu).ToList();
+                return Ok(result);
+            }
+            catch {Exception ex)
+             {
+                    
+                    return BadRequest("Hiba: " + ex.Message);
+                
+             }
+        }
+        
     }
 }

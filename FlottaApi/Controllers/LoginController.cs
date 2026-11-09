@@ -1,6 +1,7 @@
 ﻿using FlottaApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using FlottaApi.DTOS;
 
 namespace FlottaApi.Controllers
 {
@@ -8,8 +9,7 @@ namespace FlottaApi.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private FlottaContext FlottaContext
-
+        private FlottaContext _context;
         public LoginController(FlottaContext context)
         {
             _context = context;
@@ -20,13 +20,13 @@ namespace FlottaApi.Controllers
         {
             try
             {
-                User user = _context.User.FirstOrDefault(uint => uint.LoginName == loginDTO.LoginName);
+                User user = _context.Users.FirstOrDefault(u => u.LoginName == loginDTO.LoginName);
                 if (user == null)
                 {
-                    return NotFound("Missing iser. ");
+                    return NotFound("Missing user. ");
                 }
                 string phcString = user.Hash;
-                var (isValid, parameters) = Argon2Sharp.Argon2PhcFormat.VerifyPhcString(LoginDTO Password, phcString);
+                var (isValid, parameters) = Argon2Sharp.Argon2PhcFormat.VerifyPhcString(LoginDTO.Password, phcString);
                 if (isValid)
                 {
                     return Ok("taken");
